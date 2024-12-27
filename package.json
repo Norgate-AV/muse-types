@@ -1,0 +1,6 @@
+{
+    "name": "@types/muse",
+    "version": "0.0.1",
+    "description": "TypeScript definitions for AMX Muse Controllers",
+    "types": "index"
+}
