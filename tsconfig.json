@@ -1,14 +1,7 @@
 {
-    "files": [
-        "index.d.ts"
-    ],
     "compilerOptions": {
         "module": "commonjs",
-        "target": "esnext",
-        "lib": [
-            "es6",
-            "dom"
-        ],
+        "target": "es5",
         "noImplicitAny": true,
         "noImplicitThis": true,
         "strictNullChecks": true,
