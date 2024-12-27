@@ -2,5 +2,14 @@
     "name": "@types/muse",
     "version": "0.0.1",
     "description": "TypeScript definitions for AMX Muse Controllers",
-    "types": "index"
+    "types": "index.d.ts",
+    "scripts": {
+        "test": "tsd"
+    },
+    "devDependencies": {
+        "tsd": "^0.31.2"
+    },
+    "tsd": {
+        "directory": "test"
+    }
 }
