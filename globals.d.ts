@@ -25,21 +25,26 @@ declare global {
         interface Devices {
             /**
              * Get a specific device by its name
-             * @param name The ID of the device
-             * @returns The device object or undefined if not found
+             *
+             * @param {string} name The ID of the device
+             *
+             * @returns {T} The device object
              */
             get<T = any>(name: string): T;
 
             /**
              * Check if a specific device is defined
-             * @param name The ID of the device
-             * @returns true if the device is defined, false otherwise
+             *
+             * @param {string} name The ID of the device
+             *
+             * @returns {boolean} true if the device is defined, false otherwise
              */
             has(name: string): boolean;
 
             /**
              * Get the list of defined devices
-             * @returns An array of device IDs
+             *
+             * @returns {Array<string>} An array of device IDs
              */
             ids(): Array<string>;
         }
@@ -65,29 +70,37 @@ declare global {
 
             /**
              * Issue a log message at DEBUG level
-             * @param msg The message to log
-             * @returns void
+             *
+             * @param {any} msg The message to log
+             *
+             * @returns {void} void
              */
             debug(msg: any): void;
 
             /**
              * Issue a log message at INFO level
-             * @param msg The message to log
-             * @returns void
+             *
+             * @param {any} msg The message to log
+             *
+             * @returns {void} void
              */
             info(msg: any): void;
 
             /**
              * Issue a log message at WARNING level
-             * @param msg The message to log
-             * @returns void
+             *
+             * @param {any} msg The message to log
+             *
+             * @returns {void} void
              */
             warn(msg: any): void;
 
             /**
              * Issue a log message at ERROR level
-             * @param msg The message to log
-             * @returns void
+             *
+             * @param {any} msg The message to log
+             *
+             * @returns {void} void
              */
             error(msg: any): void;
         }
@@ -95,8 +108,10 @@ declare global {
         interface Services {
             /**
              * Get a service by name
-             * @param name The name of the service
-             * @returns The service object or undefined if not found
+             *
+             * @param {string} name The name of the service
+             *
+             * @returns {T} The service object
              */
             get<T = any>(name: string): T;
         }
@@ -175,16 +190,15 @@ declare global {
             expired: {
                 /**
                  * Receive events from the timeline
-                 * @param callback The function that will be called when the timer expires
+                 *
+                 * @param {Function} callback The function that will be called when the timer expires
                  */
                 listen(callback: TimelineEventCallback): void;
             };
         }
 
-        interface TimelineEvent extends Event {
+        interface TimelineEvent extends Omit<Event, "arguments"> {
             arguments: {
-                data: object;
-
                 /**
                  * The sequence number of the event
                  */
@@ -260,57 +274,57 @@ declare global {
             /**
              * A string containing the current platform state. ex. "Running"
              */
-            devicestate: string;
+            devicestate: Readonly<string>;
 
             /**
              * A string containing the platform location
              */
-            location: string;
+            location: Readonly<string>;
 
             /**
              * A string containing the platform name
              */
-            name: string;
+            name: Readonly<string>;
 
             /**
              * A string containing the platform version
              */
-            version: string;
+            version: Readonly<string>;
 
             /**
              * A string containing the platform venue
              */
-            venue: string;
+            venue: Readonly<string>;
 
             /**
              * A string containing the platform description
              */
-            description: string;
+            description: Readonly<string>;
 
             /**
              * A string containing the platform serial number
              */
-            serialnumber: string;
+            serialnumber: Readonly<string>;
 
             /**
              * A string containing the platform family
              */
-            family: string;
+            family: Readonly<string>;
 
             /**
              * A string containing the platform manufacturer
              */
-            manufacturer: string;
+            manufacturer: Readonly<string>;
 
             /**
              * A string containing the platform model
              */
-            model: string;
+            model: Readonly<string>;
 
             /**
              * A string containing the platform label
              */
-            label: string;
+            label: Readonly<string>;
         }
 
         interface DiagnosticsService {}
@@ -387,7 +401,18 @@ declare global {
             onLogout: {
                 listen(callback: (event?: SessionLogoutEvent) => void): void;
             };
+
+            /**
+             *
+             * @param username
+             * @param password
+             */
             login(username: string, password: string): void;
+
+            /**
+             *
+             * @param username
+             */
             logout(username: string): void;
         }
 
