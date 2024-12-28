@@ -17,3 +17,11 @@ expectType<Muse.LogFunction>(context.log.error);
 
 expectType<Muse.Services>(context.services);
 expectType<<T = any>(name: string) => T>(context.services.get);
+
+expectType<Muse.Export>(context.export);
+expectType<<T = Record<string, any>>(path: string, args?: T) => void>(
+    context.export.dispatch,
+);
+expectType<<T = any>(path: string, value: T, normalized?: number) => void>(
+    context.export.update,
+);

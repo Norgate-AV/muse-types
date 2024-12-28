@@ -20,6 +20,7 @@ declare global {
             devices: Devices;
             log: LogFunction & Log;
             services: Services;
+            export: Export;
         }
 
         interface Devices {
@@ -120,7 +121,37 @@ declare global {
             get<T = any>(name: string): T;
         }
 
-        interface Event {
+        interface Export {
+            /**
+             * Allows a script to generate events
+             *
+             * @param {string} path The path of the event in the descriptor
+             * @param {Record<string, any>} [args] Map of key-value pairs representing the arguments of the event that will be generated
+             *
+             * @returns {void} void
+             */
+            dispatch<T = Record<string, any>>(path: string, args?: T): void;
+
+            /**
+             * Allows a script to update the value of a parameter. When updated, any listeners to
+             * that parameter will automatically be updated with the new value
+             *
+             * @template T The type of the parameter value
+             *
+             * @param {string} path The path of the parameter that is being updated
+             * @param {T} value The new value of the parameter
+             * @param {number} [normalized] The normalized value of the parameter
+             *
+             * @returns {void} void
+             */
+            update<T = any>(path: string, value: T, normalized?: number): void;
+        }
+
+        /**
+         * Any callback or lambda functions for a .listen passed the event structure.
+         * This contains the specific information that triggered the event.
+         */
+        interface Event<T = any> {
             /**
              * The property of the device that this event refers to
              */
@@ -134,19 +165,17 @@ declare global {
             /**
              * The data payload of the event, dependent on the specific event
              */
-            arguments: {
-                data: object;
-            };
+            arguments: object;
 
             /**
              * The data value before the event was processed
              */
-            oldValue: object;
+            oldValue: T;
 
             /**
              * The object reference for the specific parameter that was updated
              */
-            source: object;
+            source: string;
         }
 
         /**
@@ -165,9 +194,9 @@ declare global {
          *
          * // Listen for events from the timeline
          * timeline.expired.listen((event) => {
-         *      context.log(`Time: ${event.time}`);
-         *      context.log(`Repetition: ${event.repetition}`);
-         *      context.log(`Sequence: ${event.sequence}`);
+         *      context.log(`Time: ${event.arguments.time}`);
+         *      context.log(`Repetition: ${event.arguments.repetition}`);
+         *      context.log(`Sequence: ${event.arguments.sequence}`);
          * });
          *
          * // Stop the timeline
@@ -185,9 +214,9 @@ declare global {
          *
          * // Listen for events from the timeline
          * timeline.expired.listen((event) => {
-         *     context.log(`Time: ${event.time}`);
-         *     context.log(`Repetition: ${event.repetition}`);
-         *     context.log(`Sequence: ${event.sequence}`);
+         *     context.log(`Time: ${event.arguments.time}`);
+         *     context.log(`Repetition: ${event.arguments.repetition}`);
+         *     context.log(`Sequence: ${event.arguments.sequence}`);
          * });
          *
          * // Stop the timeline
@@ -241,7 +270,7 @@ declare global {
             };
         }
 
-        interface TimelineEvent extends Omit<Event, "arguments"> {
+        interface TimelineEvent extends Event {
             arguments: {
                 /**
                  * The sequence number of the event
@@ -371,7 +400,7 @@ declare global {
             label: Readonly<string>;
         }
 
-        interface DiagnosticsService {}
+        interface DiagnosticService {}
 
         /**
          * The *NetLinxClient* service provides a mechanism for scripting language to communicate with a legacy NX controller.
@@ -528,109 +557,111 @@ declare global {
             ): void;
         }
 
-        interface ICSPDriver {
-            configuration: ICSPConfiguration;
-            port: Array<ICSPPort>;
+        namespace ICSP {
+            interface Driver {
+                configuration: Configuration;
+                port: Array<Port>;
 
-            /**
-             * Receive online events from the ICSP driver
-             *
-             * @param {Function} callback The function that will be called when the device comes online
-             *
-             * @returns {void} void
-             */
-            online(callback: ICSPOnlineOfflineCallback): void;
+                /**
+                 * Receive online events from the ICSP driver
+                 *
+                 * @param {Function} callback The function that will be called when the device comes online
+                 *
+                 * @returns {void} void
+                 */
+                online(callback: OnlineOfflineCallback): void;
 
-            /**
-             * Receive offline events from the ICSP driver
-             *
-             * @param {Function} callback The function that will be called when the device goes offline
-             *
-             * @returns {void} void
-             */
-            offline(callback: ICSPOnlineOfflineCallback): void;
+                /**
+                 * Receive offline events from the ICSP driver
+                 *
+                 * @param {Function} callback The function that will be called when the device goes offline
+                 *
+                 * @returns {void} void
+                 */
+                offline(callback: OnlineOfflineCallback): void;
 
-            /**
-             * Get the current online status of the device
-             *
-             * @returns {boolean} true if the device is online, false otherwise
-             */
-            isOnline(): boolean;
+                /**
+                 * Get the current online status of the device
+                 *
+                 * @returns {boolean} true if the device is online, false otherwise
+                 */
+                isOnline(): boolean;
 
-            /**
-             * Get the current offline status of the device
-             *
-             * @returns {boolean} true if the device is offline, false otherwise
-             */
-            isOffline(): boolean;
-        }
+                /**
+                 * Get the current offline status of the device
+                 *
+                 * @returns {boolean} true if the device is offline, false otherwise
+                 */
+                isOffline(): boolean;
+            }
 
-        type ICSPOnlineOfflineCallback = () => void;
+            type OnlineOfflineCallback = () => void;
 
-        type ICSPConfiguration = {
-            device: ICSPDevice;
-        };
+            type Configuration = {
+                device: Device;
+            };
 
-        interface ICSPDevice {
-            classname: Readonly<string>;
-            container: Readonly<string>;
-            description: Readonly<string>;
-            descriptorlocation: Readonly<string>;
-            devicestate: Readonly<string>;
-            family: Readonly<string>;
-            guid: Readonly<string>;
-            location: Readonly<string>;
-            manufacturer: Readonly<string>;
-            model: Readonly<string>;
-            name: Readonly<string>;
-            protocolversion: Readonly<string>;
-            serialnumber: Readonly<string>;
-            softwareversion: Readonly<string>;
-            venue: Readonly<string>;
-            version: Readonly<string>;
-        }
+            interface Device {
+                classname: Readonly<string>;
+                container: Readonly<string>;
+                description: Readonly<string>;
+                descriptorlocation: Readonly<string>;
+                devicestate: Readonly<string>;
+                family: Readonly<string>;
+                guid: Readonly<string>;
+                location: Readonly<string>;
+                manufacturer: Readonly<string>;
+                model: Readonly<string>;
+                name: Readonly<string>;
+                protocolversion: Readonly<string>;
+                serialnumber: Readonly<string>;
+                softwareversion: Readonly<string>;
+                venue: Readonly<string>;
+                version: Readonly<string>;
+            }
 
-        interface ICSPEvent {
-            data: string;
-        }
+            interface Event {
+                data: string;
+            }
 
-        interface ICSPCustomEvent extends ICSPEvent {
-            encode: string;
-            flag: number;
-            value1: number;
-            value2: number;
-            value3: number;
-            id: number;
-            type: number;
-        }
+            interface CustomEvent extends Event {
+                encode: string;
+                flag: number;
+                value1: number;
+                value2: number;
+                value3: number;
+                id: number;
+                type: number;
+            }
 
-        type ICSPEventCallback = (event?: ICSPEvent) => void;
-        type ICSPCustomEventCallback = (event?: ICSPCustomEvent) => void;
-        type ICSPParameterUpdateCallback<T = any> = (
-            event?: ParameterUpdate<T>,
-        ) => void;
+            type EventCallback = (event?: Event) => void;
+            type CustomEventCallback = (event?: CustomEvent) => void;
+            type ParameterUpdateCallback<T = any> = (
+                event?: ParameterUpdate<T>,
+            ) => void;
 
-        interface ICSPPort {
-            button: Array<Readonly<ICSPButton>>;
-            channel: Array<boolean & ICSPChannel>;
-            command(callback: ICSPEventCallback): void;
-            custom(callback: ICSPCustomEventCallback): void;
-            level: Array<number & ICSPLevel>;
-            send_command(data: string): void;
-            send_string(data: string): void;
-            string(callback: ICSPEventCallback): void;
-        }
+            interface Port {
+                button: Array<Readonly<Button>>;
+                channel: Array<boolean & Channel>;
+                command(callback: EventCallback): void;
+                custom(callback: CustomEventCallback): void;
+                level: Array<number & Level>;
+                send_command(data: string): void;
+                send_string(data: string): void;
+                string(callback: EventCallback): void;
+            }
 
-        interface ICSPButton {
-            watch(callback: ICSPParameterUpdateCallback<boolean>): void;
-        }
+            interface Button {
+                watch(callback: ParameterUpdateCallback<boolean>): void;
+            }
 
-        interface ICSPChannel {
-            watch(callback: ICSPParameterUpdateCallback<boolean>): void;
-        }
+            interface Channel {
+                watch(callback: ParameterUpdateCallback<boolean>): void;
+            }
 
-        interface ICSPLevel {
-            watch(callback: ICSPParameterUpdateCallback<number>): void;
+            interface Level {
+                watch(callback: ParameterUpdateCallback<number>): void;
+            }
         }
 
         interface Parameter<T = any> {
@@ -670,6 +701,12 @@ declare global {
             enums: Array<string>;
         }
 
+        /**
+         * Any callback or lambda functions for a .watch() attached to a parameter is passed this structure.
+         * This contains the specific information that triggered the parameter change event.
+         *
+         * @template T The type of the parameter value
+         */
         interface ParameterUpdate<T = any> {
             /**
              * The specific parameter that has been updated
@@ -706,5 +743,14 @@ declare global {
              */
             source: object;
         }
+
+        namespace IDevice {
+            interface SerialPort {}
+            interface RelayPort {}
+            interface IRPort {}
+            interface IOPort {}
+        }
+
+        namespace LED {}
     }
 }
