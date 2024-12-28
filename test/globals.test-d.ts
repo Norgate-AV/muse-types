@@ -16,3 +16,4 @@ expectType<Muse.LogFunction>(context.log.warn);
 expectType<Muse.LogFunction>(context.log.error);
 
 expectType<Muse.Services>(context.services);
+expectType<<T = any>(name: string) => T>(context.services.get);
