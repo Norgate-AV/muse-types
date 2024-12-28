@@ -18,7 +18,7 @@ declare global {
          */
         interface Context {
             devices: Devices;
-            log: ((msg: any) => void) & Log;
+            log: LogFunction & Log;
             services: Services;
         }
 
@@ -46,6 +46,8 @@ declare global {
 
         type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARNING" | "ERROR";
 
+        type LogFunction = (msg: any) => void;
+
         interface Log {
             /**
              * Set/Get the current logging threshold
@@ -54,8 +56,10 @@ declare global {
 
             /**
              * Issue a log message at TRACE level
-             * @param msg The message to log
-             * @returns void
+             *
+             * @param {any} msg The message to log
+             *
+             * @returns {void} void
              */
             trace(msg: any): void;
 
@@ -144,7 +148,7 @@ declare global {
             start(
                 intervals: Array<number>,
                 relative?: boolean,
-                repeat?: number
+                repeat?: number,
             ): void;
 
             /**
@@ -342,7 +346,7 @@ declare global {
                 host: string,
                 device: number,
                 username?: string,
-                password?: string
+                password?: string,
             ): void;
 
             /**
@@ -416,7 +420,7 @@ declare global {
                 password: string,
                 name: string,
                 port: number,
-                tls: boolean
+                tls: boolean,
             ): void;
 
             /**
@@ -451,7 +455,7 @@ declare global {
                 subject: string,
                 body: string,
                 attachment?: string,
-                fileName?: string
+                fileName?: string,
             ): void;
         }
 
@@ -506,7 +510,7 @@ declare global {
         type ICSPEventCallback = (event: ICSPEvent) => void;
         type ICSPCustomEventCallback = (event: ICSPCustomEvent) => void;
         type ICSPParameterUpdateCallback<T = any> = (
-            event: ParameterUpdate<T>
+            event: ParameterUpdate<T>,
         ) => void;
 
         interface ICSPPort {
