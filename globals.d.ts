@@ -303,6 +303,8 @@ declare global {
             interface ProgramFile {
                 /**
                  * Globally unique program ID, special characters are not allowed
+                 *
+                 * Must match the pattern `/^[a-zA-z0-9_]+$/`
                  */
                 id: string;
 
@@ -325,6 +327,8 @@ declare global {
 
                 /**
                  * The scope (location) to which the script belongs. Leave blank for global scope
+                 *
+                 * Must match the pattern `/^[a-zA-z0-9_\.]+$/`
                  */
                 scope?: string;
 
