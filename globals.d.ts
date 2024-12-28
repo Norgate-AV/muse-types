@@ -99,7 +99,7 @@ declare global {
 
         interface Event {
             /**
-             * The propery of the device that this event refers to
+             * The property of the device that this event refers to
              */
             path: string;
 
@@ -136,7 +136,7 @@ declare global {
              * Starts the timeline
              *
              * @param {Array<number>} intervals Array of time intervals in milliseconds
-             * @param {boolean} [relative = false] If there multiple times in the array, it determines whether the timings are treated as relative delays berween triggers, or as an independent list of times that may trigger out of seuence relative to the order in the list.
+             * @param {boolean} [relative = false] If there multiple times in the array, it determines whether the timings are treated as relative delays between triggers, or as an independent list of times that may trigger out of sequence relative to the order in the list.
              * @param {number} [repeat = 0] A value of -1 indicates that the timeline should run forever. A timeline started with a value of 0 will run once. The value indicates the number of repetitions.
              *
              * @returns {void} void
@@ -279,7 +279,7 @@ declare global {
             venue: string;
 
             /**
-             * A string congaining the platform description
+             * A string containing the platform description
              */
             description: string;
 
@@ -467,10 +467,10 @@ declare global {
         type ICSPOnlineOfflineCallback = () => void;
 
         type ICSPConfiguration = {
-            device: ISCPDevice;
+            device: ICSPDevice;
         };
 
-        interface ISCPDevice {
+        interface ICSPDevice {
             classname: Readonly<string>;
             container: Readonly<string>;
             description: Readonly<string>;
