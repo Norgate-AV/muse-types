@@ -26,6 +26,8 @@ declare global {
             /**
              * Get a specific device by its name
              *
+             * @template T The type of the device object
+             *
              * @param {string} name The ID of the device
              *
              * @returns {T} The device object
@@ -109,6 +111,8 @@ declare global {
             /**
              * Get a service by name
              *
+             * @template T The type of the service object
+             *
              * @param {string} name The name of the service
              *
              * @returns {T} The service object
@@ -149,6 +153,46 @@ declare global {
          * The *Timeline* service provides a mechanism for triggering events based on a sequence of times. The sequence of times is pass the *start* function as an array of integer values, with each value representing a time period, in milliseconds, that is either an offset the start of the timeline or relative to the previously triggered event.
          *
          * Each call into the context's service requests returns a new instance of a timeline.
+         *
+         * @example JavaScript
+         * ```javascript
+         * const timeline = context.services.get("timeline");
+         *
+         * // Start the timeline with a sequence of times
+         * // The timeline will trigger events at 1000ms, 2000ms, and 3000ms
+         * // The timeline will not repeat
+         * timeline.start([1000, 2000, 3000], false, 0);
+         *
+         * // Listen for events from the timeline
+         * timeline.expired.listen((event) => {
+         *      context.log(`Time: ${event.time}`);
+         *      context.log(`Repetition: ${event.repetition}`);
+         *      context.log(`Sequence: ${event.sequence}`);
+         * });
+         *
+         * // Stop the timeline
+         * timeline.stop();
+         * ```
+         *
+         * @example TypeScript
+         * ```typescript
+         * const timeline = context.services.get<Muse.TimelineService>("timeline");
+         *
+         * // Start the timeline with a sequence of times
+         * // The timeline will trigger events each 1000ms
+         * // The timeline will repeat forever
+         * timeline.start([1000], false, -1);
+         *
+         * // Listen for events from the timeline
+         * timeline.expired.listen((event) => {
+         *     context.log(`Time: ${event.time}`);
+         *     context.log(`Repetition: ${event.repetition}`);
+         *     context.log(`Sequence: ${event.sequence}`);
+         * });
+         *
+         * // Stop the timeline
+         * timeline.stop();
+         * ```
          */
         interface TimelineService {
             /**
@@ -487,10 +531,38 @@ declare global {
         interface ICSPDriver {
             configuration: ICSPConfiguration;
             port: Array<ICSPPort>;
-            online: (callback: ICSPOnlineOfflineCallback) => void;
-            offline: (callback: ICSPOnlineOfflineCallback) => void;
-            isOnline: () => boolean;
-            isOffline: () => boolean;
+
+            /**
+             * Receive online events from the ICSP driver
+             *
+             * @param {Function} callback The function that will be called when the device comes online
+             *
+             * @returns {void} void
+             */
+            online(callback: ICSPOnlineOfflineCallback): void;
+
+            /**
+             * Receive offline events from the ICSP driver
+             *
+             * @param {Function} callback The function that will be called when the device goes offline
+             *
+             * @returns {void} void
+             */
+            offline(callback: ICSPOnlineOfflineCallback): void;
+
+            /**
+             * Get the current online status of the device
+             *
+             * @returns {boolean} true if the device is online, false otherwise
+             */
+            isOnline(): boolean;
+
+            /**
+             * Get the current offline status of the device
+             *
+             * @returns {boolean} true if the device is offline, false otherwise
+             */
+            isOffline(): boolean;
         }
 
         type ICSPOnlineOfflineCallback = () => void;
@@ -532,10 +604,10 @@ declare global {
             type: number;
         }
 
-        type ICSPEventCallback = (event: ICSPEvent) => void;
-        type ICSPCustomEventCallback = (event: ICSPCustomEvent) => void;
+        type ICSPEventCallback = (event?: ICSPEvent) => void;
+        type ICSPCustomEventCallback = (event?: ICSPCustomEvent) => void;
         type ICSPParameterUpdateCallback<T = any> = (
-            event: ParameterUpdate<T>,
+            event?: ParameterUpdate<T>,
         ) => void;
 
         interface ICSPPort {
