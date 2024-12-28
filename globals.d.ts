@@ -291,21 +291,84 @@ declare global {
 
         type TimelineEventCallback = (event?: TimelineEvent) => void;
 
-        type Provider = "groovy" | "javascript" | "python";
+        namespace Program {
+            /**
+             * Programming Language
+             */
+            type Provider = "groovy" | "javascript" | "python";
 
-        type ProgramManifest = {
-            id: string;
-            name?: string | undefined;
-            description?: string | undefined;
-            version?: string | undefined;
-            disabled: boolean;
-            provider: Provider;
-            scope?: string | undefined;
-            script: string;
-            envvars?: Record<string, string> | undefined;
-            files?: Array<string> | undefined;
-            plugins?: Array<string> | undefined;
-        };
+            /**
+             * A MUSE program descriptor file
+             */
+            interface ProgramFile {
+                /**
+                 * Globally unique program ID, special characters are not allowed
+                 */
+                id: string;
+
+                /**
+                 * A description of the program that may be used by user interfaces
+                 */
+                description?: string;
+
+                /**
+                 * Disable the auto-start of the script on system boot
+                 *
+                 * @default false
+                 */
+                disabled?: boolean;
+
+                /**
+                 * Name/Value pairs that can be used to set configuration of a program
+                 */
+                envvars?: Record<string, string>;
+
+                /**
+                 * The scope (location) to which the script belongs. Leave blank for global scope
+                 */
+                scope?: string;
+
+                /**
+                 * The language the program is written in
+                 */
+                provider: Provider;
+
+                /**
+                 * The file name of the main entry point of the program
+                 *
+                 * @default "index.<extension>"
+                 */
+                script?: string;
+            }
+
+            // Extended Program File. Perhaps should not be here?
+            interface ExtendedProgramFile extends ProgramFile {
+                /**
+                 * Friendly name of the program
+                 */
+                name?: string;
+
+                /**
+                 * The version of the program
+                 */
+                version?: string;
+
+                /**
+                 * The author of the program
+                 */
+                author?: string;
+
+                /**
+                 * An array of file paths that should be included in the program
+                 */
+                files?: Array<string>;
+
+                /**
+                 * An array of file paths that will be dynamically loaded
+                 */
+                plugins?: Array<string>;
+            }
+        }
 
         /**
          * The *Platform* service provides a mechanism to read platform parameters such as model and version.
@@ -597,9 +660,9 @@ declare global {
 
             type OnlineOfflineCallback = () => void;
 
-            type Configuration = {
+            interface Configuration {
                 device: Device;
-            };
+            }
 
             interface Device {
                 classname: Readonly<string>;
